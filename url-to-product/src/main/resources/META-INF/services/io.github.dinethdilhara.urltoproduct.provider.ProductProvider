@@ -1,0 +1,3 @@
+io.github.dinethdilhara.urltoproduct.provider.impl.AliExpressProvider
+io.github.dinethdilhara.urltoproduct.provider.impl.AmazonProvider
+io.github.dinethdilhara.urltoproduct.provider.impl.GenericProvider

@@ -1,21 +1,20 @@
 package io.github.dinethdilhara.urltoproduct.provider;
 
-import io.github.dinethdilhara.urltoproduct.model.ProductDetails;
+import io.github.dinethdilhara.urltoproduct.exception.ProviderExtractionException;
 import io.github.dinethdilhara.urltoproduct.util.ExtractionEvaluator;
-import org.jsoup.Jsoup;
+import io.github.dinethdilhara.urltoproduct.model.ProductDetails;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+import org.jsoup.Jsoup;
 
-import java.math.BigDecimal;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.LinkedHashSet;
+import java.util.ArrayList;
 import java.util.Set;
+import java.math.BigDecimal;
 
 public abstract class AbstractProductProvider implements ProductProvider {
-
-    protected final ExtractionEvaluator evaluator = new ExtractionEvaluator();
 
     @Override
     public boolean supports(String url) {
@@ -32,6 +31,8 @@ public abstract class AbstractProductProvider implements ProductProvider {
         try {
             Document doc = Jsoup.connect(url)
                     .userAgent("Mozilla/5.0")
+                    .timeout(10_000)
+                    .followRedirects(true)
                     .get();
 
             ProductDetails product = new ProductDetails();
@@ -40,10 +41,14 @@ public abstract class AbstractProductProvider implements ProductProvider {
             product.setDescription(extractDescription(doc));
             product.setPrice(extractPrice(doc));
             product.setImages(extractImages(doc));
-            product.setExtractionStatus(evaluator.evaluateStatus(product));
+            product.setStatus(ExtractionEvaluator.evaluate(product).status());
             return product;
         } catch (Exception e) {
-            throw new RuntimeException(providerName() + " extraction failed", e);
+                throw new ProviderExtractionException(
+                        providerName(),
+                        "Failed to extract product data from " + url,
+                        e
+                );
         }
     }
 

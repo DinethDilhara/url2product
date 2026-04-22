@@ -1,16 +1,28 @@
 package io.github.dinethdilhara.urltoproduct.model;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
+import java.util.List;
 
+/**
+ * Represents extracted product information.
+ *
+ * <p>This is the main output model returned by the library.</p>
+ *
+ * @version 1.0.0
+ */
 public class ProductDetails {
 
+    /** Original product URL */
     private String link;
     private String title;
     private String description;
     private BigDecimal price;
-    private ArrayList<String> images;
-    private  ExtractionStatus extractionStatus;
+    private List<String> images;
+
+    private ExtractionStatus status;
+
+    /** Confidence confidenceScore (0–100) */
+    private int confidenceScore;
 
     public String getLink() {
         return link;
@@ -44,21 +56,28 @@ public class ProductDetails {
         this.price = price;
     }
 
-    public ArrayList<String> getImages() {
+    public List<String> getImages() {
         return images;
     }
 
-    public void setImages(ArrayList<String> images) {
+    public void setImages(List<String> images) {
         this.images = images;
     }
 
-    public ExtractionStatus getExtractionStatus() {
-        return extractionStatus;
+    public ExtractionStatus getStatus() {
+        return status;
     }
 
-    public void setExtractionStatus(ExtractionStatus extractionStatus) {
-        this.extractionStatus = extractionStatus;
+    public void setStatus(ExtractionStatus status) {
+        this.status = status;
     }
 
+    public int getConfidenceScore() {
+        return confidenceScore;
+    }
+
+    public void setConfidenceScore(int confidenceScore) {
+        this.confidenceScore = confidenceScore;
+    }
 
 }

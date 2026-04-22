@@ -1,6 +1,8 @@
 package io.github.dinethdilhara.urltoproduct.provider.impl;
 
+import io.github.dinethdilhara.urltoproduct.exception.ProviderExtractionException;
 import io.github.dinethdilhara.urltoproduct.provider.AbstractProductProvider;
+import io.github.dinethdilhara.urltoproduct.util.ExtractionEvaluator;
 import io.github.dinethdilhara.urltoproduct.model.ProductDetails;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -80,10 +82,14 @@ public class GenericProvider extends AbstractProductProvider {
             if (product.getImages() == null || product.getImages().isEmpty())
                 product.setImages(extractImages(doc));
 
-            product.setExtractionStatus(evaluator.evaluateStatus(product));
+            product.setStatus(ExtractionEvaluator.evaluate(product).status());
             return product;
         } catch (Exception e) {
-            throw new RuntimeException("Generic extraction failed", e);
+            throw new ProviderExtractionException(
+                    providerName(),
+                    "Failed to extract product data from " + url,
+                    e
+            );
         }
     }
 

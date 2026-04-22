@@ -1,0 +1,7 @@
+io.github.dinethdilhara.urltoproduct.core
+io.github.dinethdilhara.urltoproduct.engine
+io.github.dinethdilhara.urltoproduct.exception
+io.github.dinethdilhara.urltoproduct.model
+io.github.dinethdilhara.urltoproduct.provider
+io.github.dinethdilhara.urltoproduct.provider.impl
+io.github.dinethdilhara.urltoproduct.util

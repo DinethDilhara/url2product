@@ -8,6 +8,23 @@ import org.jsoup.Jsoup;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 
+/**
+ * AliExpress-specific product provider.
+ *
+ * <p>Extracts product data from AliExpress product pages using
+ * CSS selectors and HTML structure heuristics.</p>
+ *
+ * <p>Handles:</p>
+ * <ul>
+ *   <li>Product title (dynamic + meta fallback)</li>
+ *   <li>Description (rich HTML cleaning)</li>
+ *   <li>Price (multiple AliExpress layouts)</li>
+ *   <li>Product images (gallery + description embedded images)</li>
+ * </ul>
+ *
+ * @version 1.0.0
+ * @author Dineth Dilhara
+ */
 public class AliExpressProvider extends AbstractProductProvider {
 
     private static final String[] TITLE_SELECTORS = {

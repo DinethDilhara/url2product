@@ -1,11 +1,14 @@
 package io.github.dinethdilhara.urltoproduct.provider;
 
 import io.github.dinethdilhara.urltoproduct.exception.ProviderExtractionException;
+import io.github.dinethdilhara.urltoproduct.model.ExtractionResult;
 import io.github.dinethdilhara.urltoproduct.util.ExtractionEvaluator;
 import io.github.dinethdilhara.urltoproduct.model.ProductDetails;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.Jsoup;
+import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -14,7 +17,34 @@ import java.util.ArrayList;
 import java.util.Set;
 import java.math.BigDecimal;
 
+
+/**
+ * Base implementation for product providers.
+ *
+ * <p>This class contains shared scraping logic used by all concrete providers
+ * (e.g. Amazon, AliExpress, Generic).</p>
+ *
+ * <p>It provides common utilities such as:</p>
+ * <ul>
+ *   <li>HTML fetching using Jsoup</li>
+ *   <li>Selector-based extraction helpers</li>
+ *   <li>Price parsing and normalization</li>
+ *   <li>Image URL cleaning</li>
+ * </ul>
+ *
+ * <p>Concrete providers must implement site-specific logic such as:</p>
+ * <ul>
+ *   <li>{@link #matchesHost(String)}</li>
+ *   <li>{@link #extractTitle(Document)}</li>
+ *   <li>{@link #extractPrice(Document)}</li>
+ * </ul>
+ *
+ * @version 1.0.0
+ * @author Dineth Dilhara
+ */
 public abstract class AbstractProductProvider implements ProductProvider {
+
+    private static final Logger log = LoggerFactory.getLogger(AbstractProductProvider.class);
 
     @Override
     public boolean supports(String url) {
@@ -26,6 +56,16 @@ public abstract class AbstractProductProvider implements ProductProvider {
         }
     }
 
+    /**
+     * Extracts product information from the given URL.
+     *
+     * <p>Fetches HTML, applies provider-specific parsing logic,
+     * and returns normalized product data.</p>
+     *
+     * @param url product page URL
+     * @return extracted {@link ProductDetails}
+     * @throws ProviderExtractionException if scraping fails
+     */
     @Override
     public ProductDetails extract(String url) {
         try {
@@ -41,16 +81,29 @@ public abstract class AbstractProductProvider implements ProductProvider {
             product.setDescription(extractDescription(doc));
             product.setPrice(extractPrice(doc));
             product.setImages(extractImages(doc));
-            product.setStatus(ExtractionEvaluator.evaluate(product).status());
+
+            ExtractionResult result = ExtractionEvaluator.evaluate(product);
+            product.setStatus(result.status());
+            product.setConfidenceScore(result.confidenceScore());
+
+            log.debug("Extraction successful | provider={} | url={} | score={} | status={}",
+                    providerName(), url, result.confidenceScore(), result.status());
+
             return product;
-        } catch (Exception e) {
-                throw new ProviderExtractionException(
-                        providerName(),
-                        "Failed to extract product data from " + url,
-                        e
-                );
+
+        } catch (Exception exception) {
+
+            log.error("Extraction failed | provider={} | url={}",
+                    providerName(), url, exception);
+
+            throw new ProviderExtractionException(
+                    providerName(),
+                    "Failed to extract product data from " + url,
+                    exception
+            );
         }
     }
+
 
     protected abstract boolean matchesHost(String host);
 
@@ -86,6 +139,12 @@ public abstract class AbstractProductProvider implements ProductProvider {
         return (queryIndex >= 0 ? url.substring(0, queryIndex) : url).trim();
     }
 
+    /**
+     * Converts raw price text into a normalized BigDecimal value.
+     *
+     * @param rawPrice raw price string from HTML
+     * @return parsed price or null if invalid
+     */
     protected BigDecimal parsePrice(String rawPrice) {
         if (rawPrice == null || rawPrice.isBlank()) return null;
 
@@ -160,6 +219,13 @@ public abstract class AbstractProductProvider implements ProductProvider {
         }
         return new ArrayList<>(images);
     }
+    /**
+     * Creates a Jsoup connection for the given URL.
+     *
+     * @param url target URL
+     * @return parsed HTML document
+     * @throws Exception if connection fails
+     */
 
     protected Document connectTo(String url) throws Exception {
         return Jsoup.connect(url)

@@ -1,6 +1,7 @@
 package io.github.dinethdilhara.urltoproduct.provider.impl;
 
 import io.github.dinethdilhara.urltoproduct.exception.ProviderExtractionException;
+import io.github.dinethdilhara.urltoproduct.model.ExtractionResult;
 import io.github.dinethdilhara.urltoproduct.provider.AbstractProductProvider;
 import io.github.dinethdilhara.urltoproduct.util.ExtractionEvaluator;
 import io.github.dinethdilhara.urltoproduct.model.ProductDetails;
@@ -9,14 +10,33 @@ import com.fasterxml.jackson.databind.JsonNode;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
 
 import java.math.BigDecimal;
 import java.util.LinkedHashSet;
 import java.util.ArrayList;
 import java.util.Set;
 
+/**
+ * Fallback product provider.
+ *
+ * <p>This provider attempts to extract product data from any website using:</p>
+ * <ul>
+ *   <li>JSON-LD structured data (primary source)</li>
+ *   <li>OpenGraph / meta tags (fallback)</li>
+ *   <li>DOM selectors (final fallback)</li>
+ * </ul>
+ *
+ * <p>Used when no specific provider (e.g. Amazon, AliExpress) matches the URL.</p>
+ *
+ * @version 1.0.0
+ * @author Dineth Dilhara
+ */
+
 public class GenericProvider extends AbstractProductProvider {
 
+    private static final Logger log = LoggerFactory.getLogger(GenericProvider.class);
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
     private static final String[] TITLE_SELECTORS = {
@@ -63,6 +83,8 @@ public class GenericProvider extends AbstractProductProvider {
     @Override
     public ProductDetails extract(String url) {
         try {
+            log.debug("GenericProvider started extraction | url={}", url);
+
             Document doc = connectTo(url);
 
             ProductDetails product = extractFromJsonLd(doc);
@@ -82,9 +104,19 @@ public class GenericProvider extends AbstractProductProvider {
             if (product.getImages() == null || product.getImages().isEmpty())
                 product.setImages(extractImages(doc));
 
-            product.setStatus(ExtractionEvaluator.evaluate(product).status());
+            ExtractionResult result = ExtractionEvaluator.evaluate(product);
+            product.setStatus(result.status());
+            product.setConfidenceScore(result.confidenceScore());
+
+            log.debug("GenericProvider extraction complete | url={} | score={} | status={}",
+                    url, result.confidenceScore(), result.status());
+
             return product;
+
         } catch (Exception e) {
+
+            log.error("GenericProvider extraction failed | url={}", url, e);
+
             throw new ProviderExtractionException(
                     providerName(),
                     "Failed to extract product data from " + url,

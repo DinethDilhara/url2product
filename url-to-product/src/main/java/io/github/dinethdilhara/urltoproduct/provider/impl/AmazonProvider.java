@@ -8,6 +8,25 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Amazon-specific product provider.
+ *
+ * <p>Extracts product data from Amazon pages using strongly optimized CSS selectors.</p>
+ *
+ * <p>Supports extraction of:</p>
+ * <ul>
+ *   <li>Product title</li>
+ *   <li>Description (feature bullets + tables)</li>
+ *   <li>Price (multiple Amazon layouts)</li>
+ *   <li>Product images (gallery + main image)</li>
+ * </ul>
+ *
+ * <p>This provider is optimized for Amazon DOM structure and may break
+ * if Amazon changes their frontend markup.</p>
+ *
+ * @version 1.0.0
+ * @author Dineth Dilhara
+ */
 public class AmazonProvider extends AbstractProductProvider {
 
     private static final String[] TITLE_SELECTORS = {

@@ -17,7 +17,7 @@ import java.util.List;
  * that supports the given URL. If no provider matches, an
  * {@link UnsupportedUrlException} is thrown.</p>
  *
- * <h3>Example:</h3>
+ * Example:
  * <pre>
  * ProductProvider provider = resolver.resolve("https://example.com/product/123");
  * </pre>

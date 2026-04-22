@@ -15,7 +15,7 @@ import java.util.ServiceLoader;
  * <p>This enables a pluggable architecture where new providers
  * (e.g. Amazon, AliExpress) can be added without modifying core code.</p>
  *
- * <h3>How it works:</h3>
+ * How it works:
  * <ul>
  *   <li>Scans classpath for registered providers</li>
  *   <li>Instantiates each provider</li>

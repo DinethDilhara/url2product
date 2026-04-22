@@ -18,7 +18,7 @@ import org.slf4j.Logger;
  * the best available provider (Amazon, AliExpress, Generic fallback, etc.)
  * and returns normalized product data.</p>
  *
- * <h3>Example usage:</h3>
+ * Example usage:
  * <pre>
  * UrlToProduct extractor = new UrlToProduct();
  * ProductDetails product = extractor.extract("https://example.com/product/123");

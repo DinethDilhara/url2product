@@ -6,7 +6,7 @@
 
     <groupId>io.github.dinethdilhara</groupId>
     <artifactId>url-to-product</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.1</version>
 
     <name>url-to-product</name>
     <description>Java library to extract product details from URLs using pluggable providers</description>
@@ -14,7 +14,9 @@
 
     <licenses>
         <license>
-            <name>MIT License</name>
+            <name>Apache License 2.0</name>
+            <url>https://www.apache.org/licenses/LICENSE-2.0</url>
+            <distribution>repo</distribution>
         </license>
     </licenses>
 
@@ -25,11 +27,17 @@
         </developer>
     </developers>
 
+    <scm>
+        <connection>scm:git:git://github.com/DinethDilhara/url2product.git</connection>
+        <developerConnection>scm:git:ssh://github.com/DinethDilhara/url2product.git</developerConnection>
+        <url>https://github.com/DinethDilhara/url2product</url>
+    </scm>
 
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     </properties>
 
     <dependencies>
@@ -108,6 +116,5 @@
             <url>https://maven.pkg.github.com/DinethDilhara/url2product</url>
         </repository>
     </distributionManagement>
-
 
 </project>

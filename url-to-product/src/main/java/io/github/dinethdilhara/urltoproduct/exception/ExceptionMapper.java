@@ -45,6 +45,16 @@ public final class ExceptionMapper {
             );
         }
 
+        if (e instanceof org.jsoup.HttpStatusException ex && ex.getStatusCode() == 404) {
+            return new UrlToProductException(
+                    new ErrorDetail(
+                            "PROVIDER_ERROR",
+                            "The product page was not found (404).",
+                            "PAGE_NOT_FOUND"
+                    )
+            );
+        }
+
         if (e instanceof TimeoutException) {
             return new UrlToProductException(
                     new ErrorDetail(
